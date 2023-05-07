@@ -1,6 +1,6 @@
 #
 #  build-and-test.mk
-#  ios_cicd
+#  iOS_CI-CD
 #
 #  Created by Tomasz Kukułka on 07/05/2023.
 #
@@ -31,7 +31,7 @@ reset_environment:
 
 prepare_project:
 	@echo "ℹ️ Preparing project"
-	# Handle operations before build and test project ec. swiftgen
+	@bash prepare_project.sh
 
 build_and_test:
 	@echo "ℹ️ Building and Testing"
