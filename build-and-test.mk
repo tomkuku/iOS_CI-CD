@@ -12,17 +12,12 @@ DEVICE = 'iPhone 14 Pro'
 IOS_VERSION = 16.2
 BUNDLE_IDENTIFIER = $(TEST_PROJECT_CONFIG_BUNDLE_ID)
 CODE_SIGNING_ALLOWED = NO
-
-DANGER_XCRESULT = skillsanywhere.xcresult
+DANGER_XCRESULT = test_project.xcresult
 
 # - Targets
-all: prepare_project reset_simulator build_and_test run_danger
+all: reset_environment prepare_project build_and_test run_danger
 
-prepare_project:
-	@echo "ℹ️ Preparing project"
-	# Handle operations before build and test project ec. swiftgen
-
-reset_simulator:
+reset_environment:
 	@echo "ℹ️ Reseting simulators"
 	@# Shutdown all devices and boot again to be sure that right simulator is booted
 	@xcrun simctl shutdown all
@@ -31,11 +26,15 @@ reset_simulator:
 	@xcrun simctl uninstall $(DEVICE) $(BUNDLE_IDENTIFIER)
 	@xcrun simctl shutdown $(DEVICE)
 	@xcrun simctl erase $(DEVICE)
-
-build_and_test:
 	@echo "ℹ️ Removing DerivedData" 
 	@rm -rf ~/Library/Developer/Xcode/DerivedData
-	@echo "ℹ️ Test"
+
+prepare_project:
+	@echo "ℹ️ Preparing project"
+	# Handle operations before build and test project ec. swiftgen
+
+build_and_test:
+	@echo "ℹ️ Building and Testing"
 	@set -euo pipefail && xcodebuild \
 	clean test \
 	-project $(PROJECT) \
