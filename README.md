@@ -15,14 +15,15 @@
 - `EXPORT_OPTIONS_PLIST_BASE64` - base64 value of export options .plist file used to export archive.
 
 ## Configuration:
-- In the target's build settings, in `signing` setting:
-    Use 
-    * Set `CODE_SIGN_STYLE` to `MANUAL`,
-    * `CODE_SIGN_IDENTITY` e.g. iPhone Distribution: Your Company'. 
+1. Create new or use existing .xcconifg file and add values:
+    * `CODE_SIGN_IDENTITY` e.g. 'iPhone Distribution: Your Company'. 
     * `DEVELOPMENT_TEAM` e.g. OY7LK32 
     * `PROVISIONING_PROFILE_SPECIFIER` e.g. h3233k-abck-0oi8-howe-091kdqd922kd.mobileprovision
-- Check if `xcbeautify` is installed, link to docs: https://github.com/tuist/xcbeautify. You can change it into `xcpretty` if you want but you have to change it in `build-and-test.mk` and `archive-and-export.mk`.
-- In `prepare_project.sh` file add required steps which must be executed before buid your project ec. SwiftGen.
+2. Go to `Target > Build Settings > signing`:
+    * Set `CODE_SIGN_STYLE` to `MANUAL`.
+    * Set other values using .xcconfig.
+3. Check if `xcbeautify` is installed, link to docs: https://github.com/tuist/xcbeautify. You can change it into `xcpretty` if you want, but you have to change that in `build-and-test.mk` and `archive-and-export.mk`.
+4. In `prepare_project.sh` file add required steps which must be executed before buid your project the first time ec. SwiftGen.
 
 ### **CI**
 1. In `Gemfile` choose right gem dependency depending on what remote repo you use (`gem 'danger-gitlab'` for GitLab, `gem 'danger'` for others). See docs: https://github.com/danger/danger.
