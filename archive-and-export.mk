@@ -9,14 +9,16 @@ PROJECT = $(PROJECT_NAME).xcodeproj
 SCHEME = $(DISTRIBUTING_SCHEME_NAME)
 SDK = iphoneos
 DESTINATION = generic/platform=iOS
-CODE_SIGNING_ALLOWED = NO
+
 ARCHIVE_RESULT_PATH = archive_result.xcarchive
-EXPORT_OPTIONS_PLIST = ExportOptions.plist
 EXPORT_RESULT_PATH = export_result
+EXPORT_OPTIONS_PLIST = ExportOptions.plist
 IPA_FILE = $(EXPORT_RESULT_PATH)/$(PROJECT_NAME).ipa
-CODE_SIGN_STYLE = "Manual"
+
 PROVISION_PROFILE = ~/Library/MobileDevice/Provisioning Profiles/$(PROVISION_PROFILE_UUID).mobileprovision
 CERTIFICATE = certificate.p12
+
+DEFAULT_KEYCHAINS = $(shell security list-keychains -d user)
 
 # - Targets
 all: prepare_project archive export distribute clean
@@ -35,8 +37,12 @@ install_certificate:
 	@# Set infinite time-out of the keychain
 	@security set-keychain-settings $(KEYCHAIN_PATH)
 	@security unlock-keychain -p "$(KEYCHAIN_PASSWORD)" $(KEYCHAIN_PATH)
-	@security import $(CERTIFICATE) -P "$(CERTIFICATE_PASSWORD)" -A -t cert -f pkcs12 -k $(KEYCHAIN_PATH)
-	@security list-keychain -d user -s $(KEYCHAIN_PATH)
+	@security import $(CERTIFICATE) \
+	-P "$(CERTIFICATE_PASSWORD)" -t cert -f pkcs12 \
+	-k $(KEYCHAIN_PATH) \
+	-A -T /usr/bin/codesign
+	@# List default keychain and created keychain. If you use a SaaS runner you can delete DEFAULT_KEYCHAINS.
+	@security list-keychain -d user -s $(DEFAULT_KEYCHAINS) $(KEYCHAIN_PATH)
 
 archive:
 	@echo "ℹ️ Archive"
@@ -47,9 +53,7 @@ archive:
 	-sdk $(SDK) \
 	-destination $(DESTINATION) \
 	-archivePath $(ARCHIVE_RESULT_PATH) \
-	PROVISIONING_PROFILE_SPECIFIER="$(PROVISION_PROFILE_UUID)" \ 
-	CODE_SIGN_IDENTITY="$(CODE_SIGN_IDENTITY) \
-	CODE_SIGN_STYLE=$(CODE_SIGN_STYLE) \
+	OTHER_CODE_SIGN_FLAGS="--keychain=$(KEYCHAIN_PATH)" \
 	| xcbeautify
 
 export:
@@ -61,9 +65,6 @@ export:
 	-archivePath $(ARCHIVE_RESULT_PATH) \
 	-exportPath $(EXPORT_RESULT_PATH) \
 	-exportOptionsPlist $(EXPORT_OPTIONS_PLIST) \
-	PROVISIONING_PROFILE_SPECIFIER="$(PROVISION_PROFILE_UUID)" \ 
-	CODE_SIGN_IDENTITY="$(CODE_SIGN_IDENTITY) \
-	CODE_SIGN_STYLE=$(CODE_SIGN_STYLE) \
 	| xcbeautify
 
 distributing:

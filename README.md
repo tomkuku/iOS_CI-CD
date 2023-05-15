@@ -13,17 +13,20 @@
 - `KEYCHAIN_PATH` - Keychain path used to temporary store certificate.
 - `KEYCHAIN_PASSWORD` - Password to keychain.
 - `EXPORT_OPTIONS_PLIST_BASE64` - base64 value of export options .plist file used to export archive.
-- `CODE_SIGN_IDENTITY` - Code sign identity e.g. `iPhone Distribution: Your Company'.
 
 ## Configuration:
-
-### **General**
+- In the target's build settings, in `signing` setting:
+    Use 
+    * Set `CODE_SIGN_STYLE` to `MANUAL`,
+    * `CODE_SIGN_IDENTITY` e.g. iPhone Distribution: Your Company'. 
+    * `DEVELOPMENT_TEAM` e.g. OY7LK32 
+    * `PROVISIONING_PROFILE_SPECIFIER` e.g. h3233k-abck-0oi8-howe-091kdqd922kd.mobileprovision
 - Check if `xcbeautify` is installed, link to docs: https://github.com/tuist/xcbeautify. You can change it into `xcpretty` if you want but you have to change it in `build-and-test.mk` and `archive-and-export.mk`.
 - In `prepare_project.sh` file add required steps which must be executed before buid your project ec. SwiftGen.
 
 ### **CI**
 1. In `Gemfile` choose right gem dependency depending on what remote repo you use (`gem 'danger-gitlab'` for GitLab, `gem 'danger'` for others). See docs: https://github.com/danger/danger.
-2. If you use SaaS CI/CD runner you can delete target `reset_simulator` from `build-and-test.mk` file. Do not forget to delete it from target `all`!
+2. If you use SaaS CI/CD runner you can delete target `reset_simulator` from `build-and-test.mk` file. Don't forget to delete it from target `all`!
 3. In `build-and-test.mk` change `DEVICE`, `PLATFORM`, `IOS_VERSION` values into compatible with your project settings.
 4. Add `make -f build-and-test.mk` into your pipeline.
 
@@ -31,3 +34,6 @@
 1. In `archive-and-export.mk` change `DESTINATION` and `SDK` values into compatible with your project settings.
 2. Add `make -f archive-and-export.mk` into your pipeline.
 3. Add `make -f archive-and-export.mk clean` into your pipeline when job finish with failure.
+
+Issue fixing:
+- Check is `Apple Worldwide Developer Relations Certificate` installed and valid. See: https://www.apple.com/certificateauthority"
